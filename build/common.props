@@ -1,4 +1,5 @@
 <Project>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -13,4 +14,5 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/EnableSoftware/azure-pipelines-test</RepositoryUrl>
   </PropertyGroup>
+
 </Project>
