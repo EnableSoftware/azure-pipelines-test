@@ -1,31 +1,48 @@
 trigger:
   branches:
-    include:
-    - master
+    include: master
   paths:
-    exclude:
-    - '*.md'
+    exclude: '*.md'
 
 pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  buildConfiguration: 'Release'
+  BuildConfiguration: 'Release'
   COREHOST_TRACE: 0
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 steps:
-- script: |
-    dotnet build --configuration $(buildConfiguration)
-    dotnet test --no-build --configuration $(buildConfiguration) --logger trx
-    dotnet pack --no-build --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- script: dotnet --info
+  displayName: Display dotnet SDK information
+
+- task: DotNetCoreCLI@2
+  displayName: Build solution
   failOnStderr: true
+  inputs:
+    command: build
+    arguments: --configuration $(BuildConfiguration)
+
+- task: DotNetCoreCLI@2
+  displayName: Run tests
+  failOnStderr: true
+  inputs:
+    command: test
+    arguments: --no-build --configuration $(BuildConfiguration) --logger trx
 
 - task: PublishTestResults@2
-  condition: succeededOrFailed()
+  displayName: Publish test results
   inputs:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
+- task: DotNetCoreCLI@2
+  displayName: Create NuGet packages
+  failOnStderr: true
+  inputs:
+    command: pack
+    arguments: --no-build --configuration $(BuildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+
 - task: PublishBuildArtifacts@1
+  displayName: Publish build artifacts
