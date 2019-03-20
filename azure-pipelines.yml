@@ -1,8 +1,15 @@
 trigger:
   branches:
-    include: master
+    include:
+    - master
+    - refs/tags/*
   paths:
-    exclude: '*.md'
+    exclude:
+    - .editorconfig
+    - .gitattributes
+    - .gitignore
+    - '*.md'
+    - LICENSE
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -17,19 +24,13 @@ steps:
 - script: dotnet --info
   displayName: Display dotnet SDK information
 
-- task: DotNetCoreCLI@2
+- script: dotnet build --configuration $(BuildConfiguration)
   displayName: Build solution
   failOnStderr: true
-  inputs:
-    command: build
-    arguments: --configuration $(BuildConfiguration)
 
-- task: DotNetCoreCLI@2
+- script: dotnet test --no-build --logger trx
   displayName: Run tests
   failOnStderr: true
-  inputs:
-    command: test
-    arguments: --no-build --configuration $(BuildConfiguration) --logger trx
 
 - task: PublishTestResults@2
   displayName: Publish test results
@@ -37,12 +38,9 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- task: DotNetCoreCLI@2
-  displayName: Create NuGet packages
+- script: dotnet pack --no-build --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+  displayName: Create NuGet package
   failOnStderr: true
-  inputs:
-    command: pack
-    arguments: --no-build --configuration $(BuildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
