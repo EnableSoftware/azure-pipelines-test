@@ -28,7 +28,7 @@ steps:
   displayName: Build solution
   failOnStderr: true
 
-- script: dotnet test --no-build --configuration $(BuildConfiguration) --logger trx
+- script: dotnet test --no-build --configuration $(BuildConfiguration) --logger trx --collect "Code coverage"
   displayName: Run tests
   failOnStderr: true
 
@@ -37,6 +37,11 @@ steps:
   inputs:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: cobertura
+    summaryFileLocation: $(System.DefaultWorkingDirectory)/**/*.coverage
 
 - script: dotnet pack --no-build --configuration $(BuildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
   displayName: Create NuGet package
