@@ -22,13 +22,13 @@ variables:
 
 steps:
 - script: dotnet --info
-  displayName: Display dotnet SDK information
+  displayName: Display .NET Core SDK information
 
 - script: dotnet build --configuration $(BuildConfiguration)
   displayName: Build solution
   failOnStderr: true
 
-- script: dotnet test --no-build --logger trx
+- script: dotnet test --no-build --configuration $(BuildConfiguration) --logger trx
   displayName: Run tests
   failOnStderr: true
 
@@ -38,7 +38,7 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- script: dotnet pack --no-build --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- script: dotnet pack --no-build --configuration $(BuildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
   displayName: Create NuGet package
   failOnStderr: true
 
