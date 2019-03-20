@@ -7,11 +7,4 @@
     <Description>A solution used to test Azure Pipelines.</Description>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MinVer" Version="1.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
 </Project>
