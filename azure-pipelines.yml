@@ -42,9 +42,17 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- script: dotnet pack --no-build --configuration $(BuildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- script: dotnet pack --no-build --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
   displayName: Create NuGet package
   failOnStderr: true
+
+- task: NuGetCommand@2
+  displayName: Publish NuGet package
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: NuGet
 
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
