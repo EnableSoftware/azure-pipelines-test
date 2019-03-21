@@ -57,8 +57,11 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
 
+# TODO Support creating GitHub releases.
+# TODO Mark the release as pre-release when building a pre-release tag.
 - task: GithubRelease@0 
   displayName: Create GitHub release
+  enabled: false
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
   inputs:
     githubConnection: EnableSoftware
