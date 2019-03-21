@@ -56,3 +56,10 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
+
+- task: GithubRelease@0 
+  displayName: Create GitHub release
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  inputs:
+    githubConnection: EnableSoftware
+    repositoryName: EnableSoftware/azure-pipelines-test
