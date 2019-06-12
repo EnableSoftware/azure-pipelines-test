@@ -30,8 +30,7 @@ steps:
   displayName: Build solution
   failOnStderr: true
 
-# TODO Add code coverage
-- script: dotnet test --no-build --configuration $(BuildConfiguration) --logger trx
+- script: dotnet test --no-build --configuration $(BuildConfiguration) --logger trx -p:CollectCoverage=true -p:Exclude="[xunit.*]*" -p:CoverletOutputFormat=cobertura
   displayName: Run tests
   failOnStderr: true
 
@@ -42,6 +41,14 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
     failTaskOnFailedTests: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage results
+  condition: succeededOrFailed()
+  inputs:
+    codeCoverageTool: cobertura
+    summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml
+    failIfCoverageEmpty: true
 
 - script: dotnet pack --no-build --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
   displayName: Create NuGet package
